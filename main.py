@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 #from selenium.webdriver.support import expected_conditions as EC
 #from selenium.webdriver.common.by import By
-#from selenium.webdriver.support.ui import WebDriverWait 
+#from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
 import requests
 from requests.auth import HTTPBasicAuth
@@ -21,21 +21,52 @@ soup = BeautifulSoup(driver.page_source, "lxml")
 #print(soup.prettify())
 
 #defines the array for the links
-links=[]
+torrent_html_lines=[]
 #parse through index page and find all torrents; done by sorting for ONLY the css class="name"
 for link in soup.find_all("div", class_="name"):
-    links.append(link)
+    #append the raw html line (found by parsing the website) of every torrent to an array
+    torrent_html_lines.append(link)
 
-global number
-number = 0
-#defines a new array for the cleaned up links
-fixed_links=[]
-#this will go through the whole array and print every link followed by appending the fixed links to fixed_links array
-for link in links:
-    num_link = links[number]
-    print(num_link)
-    #the next line is the only one with errors, beginning of the stuff we want is at character 27. It only keeps the first through 5th character in the string
-    num_link.values[1:5]
-    #next line increases var number by 1 to set num_link to the next url in the links array
-    number = number + 1
+global counter
+counter = 0
+# -------------------------------------------------------------------- #
+# THE LINK SUFFIXES ARE IN THE FOLLOWING FORMAT:                       #
+# "/torrent/[id]"                                                      #
+# THE ID IS THE NUMBER THAT THE TORRENT IS ASSIGNED BY THE WEBSITE     #
+# TO NAVIGATE TO THE TORRENT, THE FULL URL IS...                       #
+# "https://www.torrentleech.org/torrent/[id]"                          #
+# -------------------------------------------------------------------- #
+
+#new array to be used for the suffixes
+link_suffixes=[]
+#for loop that runs for the amount of torrents found on the index page
+for link in torrent_html_lines:
+    #the characters we are looking for are chars 27-43, those are the ones that contain the suffix needed to create a full link later
+    link_suffix_string = str(torrent_html_lines[counter])[27:43]
+    #print the suffix found
+    print(link_suffix_string)
+    #append the suffix to an array called link_suffixes
+    link_suffixes.append(link_suffix_string)
+
+    #add 1 to the counter to move on to the next torrent
+    counter += 1
+
+#reset the counter to 0
+counter=0
+#what needs to be put before the suffix in order to create a proper link
+link_prefix = 'https://www.torrentleech.org'
+#array for the usable links that are being created
+usable_links=[]
+#for loop that runs for the amount of torrents found on the index page
+for link in torrent_html_lines:
+    #make a new string that is the actual, usable link to each torrent on the page
+    full_link = link_prefix+link_suffixes[counter]
+    #print the full usable link
+    print(full_link)
+    #append the usable link to its array
+    usable_links.append(full_link)
+
+    #add 1 to the counter to move on to the next torrent
+    counter += 1
+
 driver.close()
