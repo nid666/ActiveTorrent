@@ -1,6 +1,22 @@
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+
+
 from bs4 import BeautifulSoup
 import requests
 from requests.auth import HTTPBasicAuth
+
+#SELEIUM STUFF FOR LOGIN! ~Sam
+driver = webdriver.Firefox(executable_path='geckodriver.exe')
+def login():
+    driver.get("https://www.torrentleech.org/user/account/login/")
+    driver.find_element_by_name("username").send_keys("Samtheman801")
+    driver.find_element_by_name("password").send_keys("^^#XY9S1BWIoZ0ds")
+    driver.find_element_by_name("password").send_keys(Keys.ENTER)
+
+login()
+
 
 #we will have to set this part to the torrentleech html and the documentation has nothing about using cookies so we are going to have to figure out how to get our scraper past the login page
 #we can navigate the different torrentleech pages with https://www.torrentleech.org/torrents/browse/index/page/ followed by the page number
