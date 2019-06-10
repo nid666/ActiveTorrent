@@ -26,7 +26,16 @@ links=[]
 for link in soup.find_all("div", class_="name"):
     links.append(link)
 
-#this will go through the whole array and print every link
+global number
+number = 0
+#defines a new array for the cleaned up links
+fixed_links=[]
+#this will go through the whole array and print every link followed by appending the fixed links to fixed_links array
 for link in links:
-    print(link)
+    num_link = links[number]
+    print(num_link)
+    #the next line is the only one with errors, beginning of the stuff we want is at character 27. It only keeps the first through 5th character in the string
+    num_link.values[1:5]
+    #next line increases var number by 1 to set num_link to the next url in the links array
+    number = number + 1
 driver.close()
