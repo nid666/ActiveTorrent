@@ -1,5 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+#from selenium.webdriver.support import expected_conditions as EC
+#from selenium.webdriver.common.by import By
+#from selenium.webdriver.support.ui import WebDriverWait 
 from bs4 import BeautifulSoup
 import requests
 from requests.auth import HTTPBasicAuth
@@ -14,15 +17,16 @@ driver.find_element_by_name("password").send_keys(Keys.ENTER)
 time.sleep(2)
 
 soup = BeautifulSoup(driver.page_source, "lxml")
+#This part is just for testing purposes to see if the cookie bypass thing worked and makes the html look better
+#print(soup.prettify())
 
-global number
-number = 0
+#defines the array for the links
+links=[]
 #parse through index page and find all torrents; done by sorting for ONLY the css class="name"
 for link in soup.find_all("div", class_="name"):
+    links.append(link)
 
-    #not even close to actually working, but concept is there so sam remembers
-    number = number + 1
-    exec("link%d = %d" % (number, number)
+#this will go through the whole array and print every link
+for link in links:
     print(link)
-
 driver.close()
