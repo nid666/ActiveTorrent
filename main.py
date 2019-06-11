@@ -79,26 +79,35 @@ get_links(1)
 #get_links(2)
 #print('PAGE 3')
 #get_links(3)
-
+dwn=[]
 def get_torrent_info(torrent_link):
     driver.get(torrent_link)
     soup = BeautifulSoup(driver.page_source, "lxml")
     
     #parse torrent page for number of seeders
     for seeders in soup.find_all("span", class_="seeders-text"):
-        print(seeders)
+        #print(seeders)
         #parse the raw html string that is found for only the integer in it
         number_seeders_parsed = re.findall(r'\d+', str(seeders))
         #convert the resulting list to an integer
         number_seeders_int = int("".join(map(str, number_seeders_parsed))) 
         #print(for now) the actual integer result
-        print(number_seeders_int)
+        print("number of seeders = " + str(number_seeders_int))
+    
+   # for downloads in soup.find_all(string=""):
+    tables = soup.findChildren('table')
+    my_table = tables[0]
+    rows = my_table.findChildren(['tr'])
 
-    for downloads in soup.find_all(string=""):
-        print(downloads)
-
-
-
+    for row in rows:
+        cells = row.findChildren('td')
+        for cell in cells:
+            val = cell.string
+            full_table = "%s" % val
+            print(full_table)
+            '''
+            using splitlines() isnt working here for some reason. Im probably just tired. Remove the first 9 lines and the rest after the 10th line and you are left with the number of downloads
+            '''
 #for x in range(0,len(usable_links)):
 #    get_torrent_info(usable_links[x])
 
