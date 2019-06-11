@@ -6,6 +6,9 @@ from requests.auth import HTTPBasicAuth
 import time
 import re
 
+#create/open file where torrent info arrays will be stored
+storage_file = open("torrentinfo.txt", "a+")
+
 #have user input their login details
 username = input("Username:")
 password = input("Password:")
@@ -22,6 +25,7 @@ time.sleep(2)
 #array for the usable links that are being created using the below function
 global usable_links
 usable_links=[]
+#gets every torrent link from the index pages specified
 def get_links(index_page_number):
     index_page_prefix = "https://www.torrentleech.org/torrents/browse/index/page/"
     index_page_url = index_page_prefix+str(index_page_number)
@@ -35,6 +39,7 @@ def get_links(index_page_number):
         #append the raw html line (found by parsing the website) of every torrent to an array
         torrent_html_lines.append(link)
 
+    #counter used in a couple different forloops
     global counter
     counter = 0
     # -------------------------------------------------------------------- #
@@ -73,17 +78,22 @@ def get_links(index_page_number):
         #add 1 to the counter to move on to the next torrent
         counter += 1
 
-#print('PAGE 1')
-get_links(1)
-#print('PAGE 2')
-#get_links(2)
-#print('PAGE 3')
-#get_links(3)
-dwn=[]
-def get_torrent_info(torrent_link):
+#gets and stores the specified torrent's link, number of seeders, and number of downloads
+def get_store_torrent_info(torrent_link):
+    print('\n%s' %(torrent_link))
     driver.get(torrent_link)
     soup = BeautifulSoup(driver.page_source, "lxml")
     
+    #parse torrent page for number of downloads
+    for downloads in soup.find_all("tr")[4:5]:
+        #print(downloads)
+        #parse the raw html string that is found for only the integer in it
+        number_downloads_parsed = re.findall(r'\d+', str(downloads))
+        #convert the resulting list to an integer
+        number_downloads_int = int("".join(map(str, number_downloads_parsed))) 
+        #print(for now) the actual integer result
+        print("Downloads = %d" % number_downloads_int)
+
     #parse torrent page for number of seeders
     for seeders in soup.find_all("span", class_="seeders-text"):
         #print(seeders)
@@ -92,26 +102,27 @@ def get_torrent_info(torrent_link):
         #convert the resulting list to an integer
         number_seeders_int = int("".join(map(str, number_seeders_parsed))) 
         #print(for now) the actual integer result
-        print("number of seeders = " + str(number_seeders_int))
-    
-   # for downloads in soup.find_all(string=""):
-    tables = soup.findChildren('table')
-    my_table = tables[0]
-    rows = my_table.findChildren(['tr'])
+        print("Seeders = %d" % number_seeders_int)
 
-    for row in rows:
-        cells = row.findChildren('td')
-        for cell in cells:
-            val = cell.string
-            full_table = "%s" % val
-            print(full_table)
-            '''
-            using splitlines() isnt working here for some reason. Im probably just tired. Remove the first 9 lines and the rest after the 10th line and you are left with the number of downloads
-            '''
-#for x in range(0,len(usable_links)):
-#    get_torrent_info(usable_links[x])
+    #create list of link, number of downloads, number of seeders to write to txt file
+    list_to_save = [usable_links[link_array_position], str(number_downloads_int), str(number_seeders_int), '\n']
 
-print(usable_links[0])
-get_torrent_info(usable_links[0])
+    #write the list
+    with open("torrentinfo.txt", "a+") as filehandle:  
+        for listitem in list_to_save:
+            filehandle.write('%s ' % listitem)
 
+#tells the program how many index pages to parse
+number_index_pages_to_parse = 1
+for x in range(1,(number_index_pages_to_parse+1)):
+    get_links(x)
+
+#global the position of the link that is being parsed so it can be used for both actually getting the information and for storage
+#position refers to the number slot it is in in the array usable_links
+global link_array_position
+#get and store the needed torrent info to a txt file to be used for equations
+for link_array_position in range(0,len(usable_links)):
+    get_store_torrent_info(usable_links[link_array_position])
+
+#close the selenium web page when finished
 driver.close()
