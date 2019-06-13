@@ -2,6 +2,7 @@
 Sees which files need seeders in private trackers
 
 ## Requirements
+#(all requirements can be installed with one command from requirements.txt)
 * Python3
 * Firefox
 * Geckodriver (ensure that executable is in main dir)
@@ -11,9 +12,7 @@ Sees which files need seeders in private trackers
 ## Windows
 ```console
 git clone https://github.com/nid666/ActiveTorrent.git
-pip3 install selenium
-pip3 install bs4
-pip3 install lxml
 cd ActiveTorrent
+pip3 install -r requirements.txt
 py main.py
 ```
