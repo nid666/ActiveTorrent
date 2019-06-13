@@ -15,6 +15,10 @@ password = input("Password:")
 
 #selenium used to pass login; requires firefox and geckodriver to work
 driver = webdriver.Firefox(executable_path='geckodriver.exe')
+firefox_profile = webdriver.FirefoxProfile()
+firefox_profile.set_preference('permissions.default.image', 2)
+firefox_profile.set_preference('dom.ipc.plugins.enabled.libflashplayer.so', 'false')
+driver = webdriver.Firefox(firefox_profile=firefox_profile)
 driver.get("https://www.torrentleech.org/user/account/login/")
 driver.find_element_by_name("username").send_keys(username)
 driver.find_element_by_name("password").send_keys(password)
@@ -113,7 +117,7 @@ def get_store_torrent_info(torrent_link):
             filehandle.write('%s ' % listitem)
 
 #tells the program how many index pages to parse
-number_index_pages_to_parse = 1
+number_index_pages_to_parse = 25556
 for x in range(1,(number_index_pages_to_parse+1)):
     get_links(x)
 
