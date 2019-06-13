@@ -2,7 +2,7 @@
 Sees which files need seeders in private trackers
 
 ## Requirements
-# (all requirements can be installed with one command from requirements.txt)
+###### (all requirements can be installed with one command from requirements.txt)
 * Python3
 * Firefox
 * Geckodriver (ensure that executable is in main dir)
