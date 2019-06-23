@@ -25,6 +25,10 @@ driver.find_element_by_name("password").send_keys(password)
 driver.find_element_by_name("password").send_keys(Keys.ENTER)
 time.sleep(2)
 
+#this variable needs to be globalled in order to be used in both functions
+#marks the position the program is in in the usable_links array, so the correct
+#torrent to parse through can be selected and the correct information can be written to txt
+global link_array_position
 
 #array for the usable links that are being created using the below function
 global usable_links
@@ -82,19 +86,23 @@ def get_links(index_page_number):
         #add 1 to the counter to move on to the next torrent
         counter += 1
 
+    #enter the freshly built array into the function that will go through and collect info about each torrent
+    for link_array_position in range(0,len(usable_links)):
+        get_store_torrent_info(usable_links[link_array_position])
+
 #gets and stores the specified torrent's link, number of seeders, and number of downloads
 def get_store_torrent_info(torrent_link):
     print('\n%s' %(torrent_link))
     driver.get(torrent_link)
     soup = BeautifulSoup(driver.page_source, "lxml")
-    
+
     #parse torrent page for number of downloads
     for downloads in soup.find_all("tr")[4:5]:
         #print(downloads)
         #parse the raw html string that is found for only the integer in it
         number_downloads_parsed = re.findall(r'\d+', str(downloads))
         #convert the resulting list to an integer
-        number_downloads_int = int("".join(map(str, number_downloads_parsed))) 
+        number_downloads_int = int("".join(map(str, number_downloads_parsed)))
         #print(for now) the actual integer result
         print("Downloads = %d" % number_downloads_int)
 
@@ -104,7 +112,7 @@ def get_store_torrent_info(torrent_link):
         #parse the raw html string that is found for only the integer in it
         number_seeders_parsed = re.findall(r'\d+', str(seeders))
         #convert the resulting list to an integer
-        number_seeders_int = int("".join(map(str, number_seeders_parsed))) 
+        number_seeders_int = int("".join(map(str, number_seeders_parsed)))
         #print(for now) the actual integer result
         print("Seeders = %d" % number_seeders_int)
 
@@ -112,7 +120,7 @@ def get_store_torrent_info(torrent_link):
     list_to_save = [usable_links[link_array_position], str(number_downloads_int), str(number_seeders_int), '\n']
 
     #write the list
-    with open("torrentinfo.txt", "a+") as filehandle:  
+    with open("torrentinfo.txt", "a+") as filehandle:
         for listitem in list_to_save:
             filehandle.write('%s ' % listitem)
 
@@ -120,13 +128,6 @@ def get_store_torrent_info(torrent_link):
 number_index_pages_to_parse = 25556
 for x in range(1,(number_index_pages_to_parse+1)):
     get_links(x)
-
-#global the position of the link that is being parsed so it can be used for both actually getting the information and for storage
-#position refers to the number slot it is in in the array usable_links
-global link_array_position
-#get and store the needed torrent info to a txt file to be used for equations
-for link_array_position in range(0,len(usable_links)):
-    get_store_torrent_info(usable_links[link_array_position])
 
 #close the selenium web page when finished
 driver.close()
