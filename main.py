@@ -29,6 +29,7 @@ time.sleep(2)
 #marks the position the program is in in the usable_links array, so the correct
 #torrent to parse through can be selected and the correct information can be written to txt
 global link_array_position
+link_array_position = 1
 
 #array for the usable links that are being created using the below function
 global usable_links
